@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/signal"
 	"strings"
@@ -28,20 +27,20 @@ var (
 )
 
 var (
-	// Version that is passed on compile time through -ldflags
-	Version = "built locally"
+	// version that is passed on compile time through -ldflags
+	version = "local"
 
-	// GitCommit that is passed on compile time through -ldflags
-	GitCommit = "none"
+	// commit that is passed on compile time through -ldflags
+	commit = "none"
 
-	// GitBranch that is passed on compile time through -ldflags
-	GitBranch = "none"
+	// branch that is passed on compile time through -ldflags
+	branch = "none"
 
-	// BuildTime that is passed on compile time through -ldflags
-	BuildTime = "none"
+	// buildTime that is passed on compile time through -ldflags
+	buildTime = "none"
 
-	// HumanVersion is a human readable app version
-	HumanVersion = fmt.Sprintf("%s - %.7s (%s) %s", Version, GitCommit, GitBranch, BuildTime)
+	// versionSingature is a human readable app version
+	versionSingature = fmt.Sprintf("%s - [%s:%.7s] %s", version, branch, commit, buildTime)
 )
 
 const (
@@ -68,7 +67,7 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = "Pumba"
-	app.Version = HumanVersion
+	app.Version = versionSingature
 	app.Compiled = time.Now()
 	app.Authors = []cli.Author{
 		{
@@ -241,7 +240,7 @@ func tlsConfig(c *cli.Context) (*tls.Config, error) {
 		if caCertFlag != "" {
 			var caCert []byte
 			if strings.HasPrefix(caCertFlag, "/") {
-				caCert, err = ioutil.ReadFile(caCertFlag)
+				caCert, err = os.ReadFile(caCertFlag)
 				if err != nil {
 					return nil, errors.Wrap(err, "unable to read CA certificate")
 				}
